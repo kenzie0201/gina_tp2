@@ -99,7 +99,7 @@ int
 main(void)
 {
 //---------------------------------------VARIABLES---------------------------------------//
-    uint32_t readVal[3];
+    uint32_t readVal[4];
 
     float measuredADCVal;
     char displayADCVal[17]="\0";
