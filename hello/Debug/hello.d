@@ -31,6 +31,7 @@ hello.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/s
 hello.obj: ../mylib/switchgain.h
 hello.obj: ../mylib/mypwm.h
 hello.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/pwm.h
+hello.obj: ../mylib/led.h
 
 ../hello.c: 
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/stdint.h: 
@@ -63,3 +64,4 @@ hello.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/pwm.h
 ../mylib/switchgain.h: 
 ../mylib/mypwm.h: 
 /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/pwm.h: 
+../mylib/led.h: 

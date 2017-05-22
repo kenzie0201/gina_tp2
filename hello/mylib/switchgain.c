@@ -109,4 +109,3 @@ void SetADCSwitch(int mode){
         GPIOPinWrite(GPIO_PORTF_BASE,GPIO_PIN_4, 16);
     }
 }
-

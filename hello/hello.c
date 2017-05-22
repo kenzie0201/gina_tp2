@@ -46,10 +46,10 @@
 #include "mylib/display.h"
 #include "mylib/uart.h"
 #include "mylib/switchgain.h"
-#include "mylib/digitpot.h"
 //#include "mylib/mytimer.h"
 #include "mylib/display.h"
 #include "mylib/mypwm.h"
+#include "mylib/led.h"
 
 #define MIN_10   0
 #define MIN_1    1
@@ -84,9 +84,11 @@ float loggingDuration=0;
 char int2str_duration[10] = "\0";
 // for timer
 uint32_t g_ui32Flags=0;
+uint32_t ToggleLED2 = 0;
 int numTick;
 uint8_t loggingCounter = 0;
 uint8_t counter =0;
+uint8_t LED2Counter =0;
 
 //*****************************************************************************
 //
@@ -112,11 +114,12 @@ main(void)
     initADC();
     initLCD();
     initMux();
-//    initPot();
+
 
     initPWM();
     // Enable the GPIO port that is used for the on-board LED.
     initTimer();
+    initLED();
 
 
 //---------------------------- Enable processor interrupts-------------------------------//
@@ -182,19 +185,10 @@ main(void)
     modeChange();
     SetMuxDCAC(pb_mode);
 
+//-------------------------------device power up LED-------------------------------------//
+    GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_3, 1 << 3);
 
-    //
-    // Enable the GPIO port that is used for the on-board LED.
-    //
-//    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
-    //
-    // Enable the GPIO pins for the LED (PF2).
-    //
-//    ROM_GPIOPinTypeGPIOOutput(GPIO_PORTA_BASE, GPIO_PIN_2);
-
-//    WritePot(0x410F);
-//    uint32_t readPot[3];
 
 //----------------------------------------START-------------------------------------------//
    while(1){
@@ -211,21 +205,13 @@ main(void)
            logging_pressed = 0;
        }
 
-
-       if (counter >= ((loggingFreq[frequency_opt]*2))){ // check if the frequency is over and RESET the counter and read the measurements
-              counter=0;
-              freq_flag = 1;
-              //
-              // Use the flags to Toggle the LED for this timer
-              //
-              g_ui32Flags = g_ui32Flags^1;
-              GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, g_ui32Flags << 2);
-
-
-
+       if (LED2Counter >= ((loggingFreq[frequency_opt]*2))){ // check if the frequency is over and RESET the counter and read the measurements
+           LED2Counter =0;
+           ToggleLED2 = ToggleLED2^1;
+           //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, g_ui32Flags << 2);
+           GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, ToggleLED2);
        }
 
-           //SysCtlDelay(100000); // use to give enough time for pot setting? maybe maybe not?
 
  //          UARTprintf("freq_flag : %d \n",freq_flag);
             // send 0x38 to read the ADC
@@ -241,218 +227,229 @@ main(void)
 
             if (freq_flag == 1){
 
-               switch(measure_mode){
+                switch(measure_mode){
 
-               case CURRENT_10:
-                   if ((measuredADCVal < 9.9 )&& (measuredADCVal > -9.9 )){
-                   }else {
-                       measure_mode = CURRENT_200;
-                   }
-                   // if mode_level =2 -> start logging
-                   break;
-               case CURRENT_200:
-                   if ((measuredADCVal < 9.9) &&( measuredADCVal > -9.9 )){
-                       measure_mode = CURRENT_10;
+                case CURRENT_10:
+                    if ((measuredADCVal < 9.9 )&& (measuredADCVal > -9.9 )){
+                    }else {
+                        measure_mode = CURRENT_200;
+                    }
+                    // if mode_level =2 -> start logging
+                    break;
+                case CURRENT_200:
+                    if ((measuredADCVal < 9.9) &&( measuredADCVal > -9.9 )){
+                        measure_mode = CURRENT_10;
                     }else if (measuredADCVal > 200){
-                     // OL display
+                        // OL display
                     }
-                   // if mode_level =2 -> start logging
-                   break;
-               case VOLTAGE_1:
-                   if ((measuredADCVal < 0.9 )&& (measuredADCVal > -0.9 )){
-                   }else {
-                       measure_mode = VOLTAGE_5;
-                   }
-                   // if mode_level =2 -> start logging
-                   break;
-               case VOLTAGE_5:
-                   if ((measuredADCVal < 5) &&( measuredADCVal > -5 )){
-                       if((measuredADCVal < 0.9 )&&( measuredADCVal > -0.9)){
-                           measure_mode = VOLTAGE_1;
-                       }
-                   }else {
-                       measure_mode = VOLTAGE_12;
-                   }
-                   // if mode_level =2 -> start logging
-                   break;
-               case VOLTAGE_12:
-                   if ((measuredADCVal < 0.9 )&&( measuredADCVal > -0.9 )){
-                       measure_mode = VOLTAGE_1;
-                   }else if ((measuredADCVal < 5) && (measuredADCVal > -5 )){
-                       measure_mode =  VOLTAGE_5;
-                   }else if (measuredADCVal > 11.9){
-                       // display OL
-                   }
-                   // if mode_level =2 -> start logging
-                   break;
-               case RESISTANCE_1K:
-                   if ((measuredADCVal < 999 )&& (measuredADCVal > -999 )){
-                   }else {
-                       measure_mode = RESISTANCE_1M;
-                   }
-                   if ((pb_mode == CONTINUITY) && measuredADCVal < 5){
-                       setPWM(BUZZER,HIGH);
-                   }
-                   // if mode_level =2 -> start logging
-                   break;
-               case RESISTANCE_1M:
-                   if ((measuredADCVal < 0.9) &&( measuredADCVal > -0.9 )){
-                       measure_mode = RESISTANCE_1K;
+                    // if mode_level =2 -> start logging
+                    break;
+                case VOLTAGE_1:
+                    if ((measuredADCVal < 0.9 )&& (measuredADCVal > -0.9 )){
+                    }else {
+                        measure_mode = VOLTAGE_5;
+                    }
+                    // if mode_level =2 -> start logging
+                    break;
+                case VOLTAGE_5:
+                    if ((measuredADCVal < 5) &&( measuredADCVal > -5 )){
+                        if((measuredADCVal < 0.9 )&&( measuredADCVal > -0.9)){
+                            measure_mode = VOLTAGE_1;
+                        }
+                    }else {
+                        measure_mode = VOLTAGE_12;
+                    }
+                    // if mode_level =2 -> start logging
+                    break;
+                case VOLTAGE_12:
+                    if ((measuredADCVal < 0.9 )&&( measuredADCVal > -0.9 )){
+                        measure_mode = VOLTAGE_1;
+                    }else if ((measuredADCVal < 5) && (measuredADCVal > -5 )){
+                        measure_mode =  VOLTAGE_5;
+                    }else if (measuredADCVal > 11.9){
+                        // display OL
+                    }
+                    // if mode_level =2 -> start logging
+                    break;
+                case RESISTANCE_1K:
+                    if ((measuredADCVal < 999 )&& (measuredADCVal > -999 )){
+                    }else {
+                        measure_mode = RESISTANCE_1M;
+                    }
+                    if ((pb_mode == CONTINUITY) && measuredADCVal < 5){
+                        setPWM(BUZZER,HIGH);
+                    }
+                    // if mode_level =2 -> start logging
+                    break;
+                case RESISTANCE_1M:
+                    if ((measuredADCVal < 0.9) &&( measuredADCVal > -0.9 )){
+                        measure_mode = RESISTANCE_1K;
                     }else if (measuredADCVal > 1000){ // 100k
-                     // OL display
+                        // OL display
                     }
-                   // if mode_level =2 -> start logging
-                   break;
-               case LOGIC:
-                   if (measuredADCVal>1.25){
-                       setPWM(BUZZER,HIGH);
-                       strcpy(displayADCVal, " HIGH     ");
+                    // if mode_level =2 -> start logging
+                    break;
+                case LOGIC:
+                    if (measuredADCVal>1.25){
+                        setPWM(BUZZER,HIGH);
+                        strcpy(displayADCVal, " HIGH     ");
 
-                   }else if (measuredADCVal>0.5){
-                       setPWM(BUZZER,LOW);
-                       strcpy(displayADCVal, "  LOW     ");
+                    }else if (measuredADCVal>0.5){
+                        setPWM(BUZZER,LOW);
+                        strcpy(displayADCVal, "  LOW     ");
 
-                   }else{
-                       setPWM(BUZZER,OFF);
-                       strcpy(displayADCVal, " FLOAT    ");
+                    }else{
+                        setPWM(BUZZER,OFF);
+                        strcpy(displayADCVal, " FLOAT    ");
 
-                   }
-        //           UARTprintf("%s \n",displayADCVal);
-                   break;
-               case SETBRIGHT:
-                   if (mode_level == 2){
-                       if(brightness_opt < 5) {
-                           brightness_opt++;
-                       }else{
-                           brightness_opt = 1;
-                       }
-                       measuredADCVal = brightness_opt;
-                       setPWM(LED,brightness_opt);
-                       setCursorPositionLCD(0,15);
-                       printSpecialChar(brightness_opt);
-                       mode_level = 1;
-                   }
+                    }
+                    //           UARTprintf("%s \n",displayADCVal);
+                    break;
+                case SETBRIGHT:
+                    if (mode_level == 2){
+                        if(brightness_opt < 5) {
+                            brightness_opt++;
+                        }else{
+                            brightness_opt = 1;
+                        }
+                        measuredADCVal = brightness_opt;
+                        setPWM(LED,brightness_opt);
+                        setCursorPositionLCD(0,15);
+                        printSpecialChar(brightness_opt);
+                        mode_level = 1;
+                    }
 
-                   break;
+                    break;
 
-               case SETFREQ:
+                case SETFREQ:
 
-                   if ((mode_level == 2) && (frequency_opt < 9)) {
-                       frequency_opt++;
-                       counter=0;
+                    if ((mode_level == 2) && (frequency_opt < 9)) {
+                        frequency_opt++;
+                        counter=0;
 
-                   }else if (frequency_opt >= 9){
-                       frequency_opt = 0;
-                   }
-                   measuredADCVal = loggingFreq[frequency_opt];
-                   mode_level = 1;
+                    }else if (frequency_opt >= 9){
+                        frequency_opt = 0;
+                    }
+                    measuredADCVal = loggingFreq[frequency_opt];
+                    mode_level = 1;
 
-                   break;
-               case SETPERIOD:
-                   if ((mode_level == 2)&& (duration_red_pressed ==1)) {
-                       if (cursor_pos <5){
-                           cursor_pos++;
-                       }else{
-                           cursor_pos = 0;
-                       }
-                       duration_red_pressed = 0;
-                   }
+                    break;
+                case SETPERIOD:
+                    if ((mode_level == 2)&& (duration_red_pressed ==1)) {
+                        if (cursor_pos <5){
+                            cursor_pos++;
+                        }else{
+                            cursor_pos = 0;
+                        }
+                        duration_red_pressed = 0;
+                    }
 
-                   if (duration_green_pressed == 2){
-                       switch(cursor_pos){
-                       case MIN_10:
-        //                   tmpSet = set_duration[0];
-        //                   UARTprintf("tmpSet: %d \n",tmpSet);
-                           set_duration[0] = (++set_duration[0])%10;
-                           break;
-                       case MIN_1:
-                           set_duration[1] = (++set_duration[1])%10;
-                           break;
-                       case SEC_10:
-                           set_duration[2] = (++set_duration[2])%6;
-                           break;
-                       case SEC_1:
-                           set_duration[3] = (++set_duration[3])%10;
+                    if (duration_green_pressed == 2){
+                        switch(cursor_pos){
+                        case MIN_10:
+                            //                   tmpSet = set_duration[0];
+                            //                   UARTprintf("tmpSet: %d \n",tmpSet);
+                            set_duration[0] = (++set_duration[0])%10;
+                            break;
+                        case MIN_1:
+                            set_duration[1] = (++set_duration[1])%10;
+                            break;
+                        case SEC_10:
+                            set_duration[2] = (++set_duration[2])%6;
+                            break;
+                        case SEC_1:
+                            set_duration[3] = (++set_duration[3])%10;
 
-                           break;
-                       case HALFSEC:
-                           set_duration[4] /= 5;
-                           set_duration[4] = (++set_duration[4])%2;
-                           set_duration[4] *= 5;
-                           break;
-                       case ENTERKEY:
-                           duration_green_pressed = 0;
-                           duration_red_pressed = 0;
-                           mode_level = 1;
+                            break;
+                        case HALFSEC:
+                            set_duration[4] /= 5;
+                            set_duration[4] = (++set_duration[4])%2;
+                            set_duration[4] *= 5;
+                            break;
+                        case ENTERKEY:
+                            duration_green_pressed = 0;
+                            duration_red_pressed = 0;
+                            mode_level = 1;
 
-                           loggingDuration = (float)((set_duration[0]*600+set_duration[1]*60+set_duration[2]*10+set_duration[3])+(float)set_duration[4]/10);
+                            loggingDuration = (float)((set_duration[0]*600+set_duration[1]*60+set_duration[2]*10+set_duration[3])+(float)set_duration[4]/10);
 
-                           break;
-                       }
+                            break;
+                        }
 
-                       UARTprintf("set_duration :");
-                       for (i=0;i<5;i++){
-                           UARTprintf(" %d ",set_duration[i]);
-                       }
-                       UARTprintf("\n");
-                   }
+                        UARTprintf("set_duration :");
+                        for (i=0;i<5;i++){
+                            UARTprintf(" %d ",set_duration[i]);
+                        }
+                        UARTprintf("\n");
+                    }
 
-                   //mode_level = 1;
-                   break;
+                    //mode_level = 1;
+                    break;
 
-               default:
-                   break;
-               }
+                default:
+                    break;
+                }
 
-         //      SetPot(measure_mode); // set it either
-               SetGain(measure_mode);
-               SysCtlDelay(30);
 
-               if ((measure_mode == LOGIC)){ // don't need to convert number to string
-                   setDiaplyValue(measure_mode , measuredADCVal, tmp);
-                   setCursorPositionLCD(1,5);
-                   printLCD(displayADCVal);
+                SetGain(measure_mode);
+                SysCtlDelay(30);
 
-               }else if (measure_mode == SETBRIGHT ) {
+                if ((measure_mode == LOGIC)){ // don't need to convert number to string
+                    setDiaplyValue(measure_mode , measuredADCVal, tmp);
+                    setCursorPositionLCD(1,5);
+                    printLCD(displayADCVal);
 
-                   itoa(brightness_opt,displayADCVal,10);
-                   for (i=1;i<16;i++){
-                       displayADCVal[i] = ' ';
-                   }
-                   setCursorPositionLCD(1,10);
-                   printLCD(displayADCVal);
-               }else if (measure_mode == SETPERIOD){
-                   if(duration_green_pressed>0){
-                       if(cursor_pos <5){
-                           itoa(set_duration[cursor_pos],displayADCVal,10);
-                           setCursorPositionLCD(1,set_cursor_duration[cursor_pos]);
-                           printLCD(displayADCVal);
-                           setCursorPositionLCD(1,set_cursor_duration[cursor_pos]);
-                           setBlockCursorLCD();
-                       }else {
-                           setCursorPositionLCD(1,set_cursor_duration[cursor_pos]);
-                           printSpecialChar(ENTER);
-                           setCursorPositionLCD(1,set_cursor_duration[cursor_pos]);
-                           setBlockCursorLCD();
-                       }
-                       duration_green_pressed =1;
-                   }else {
-                       cursorOffLCD();       // Cursor invisible
-                   }
+                }else if (measure_mode == SETBRIGHT ) {
 
-               }else{
-                   // base on the mode, scale the readADC value to display value
-                   setDiaplyValue(measure_mode , measuredADCVal, displayADCVal);
-                   // display value on ADC
-                   setCursorPositionLCD(1,5);
-                   printLCD(displayADCVal);
-               }
+                    itoa(brightness_opt,displayADCVal,10);
+                    for (i=1;i<16;i++){
+                        displayADCVal[i] = ' ';
+                    }
+                    setCursorPositionLCD(1,10);
+                    printLCD(displayADCVal);
+                }else if (measure_mode == SETPERIOD){
+                    if(duration_green_pressed>0){
+                        if(cursor_pos <5){
+                            itoa(set_duration[cursor_pos],displayADCVal,10);
+                            setCursorPositionLCD(1,set_cursor_duration[cursor_pos]);
+                            printLCD(displayADCVal);
+                            setCursorPositionLCD(1,set_cursor_duration[cursor_pos]);
+                            setBlockCursorLCD();
+                        }else {
+                            setCursorPositionLCD(1,set_cursor_duration[cursor_pos]);
+                            printSpecialChar(ENTER);
+                            setCursorPositionLCD(1,set_cursor_duration[cursor_pos]);
+                            setBlockCursorLCD();
+                        }
+                        duration_green_pressed =1;
+                    }else {
+                        cursorOffLCD();       // Cursor invisible
+                    }
 
-               if (logging_pressed == 1){
-                   UARTprintf("display: %s \n",displayADCVal);
-               }
-               freq_flag = 0;
-        }
+                }else{
+                    // base on the mode, scale the readADC value to display value
+                    setDiaplyValue(measure_mode , measuredADCVal, displayADCVal);
+                    // display value on ADC
+                    setCursorPositionLCD(1,5);
+                    printLCD(displayADCVal);
+                }
+
+                if (logging_pressed == 1){
+                    UARTprintf("display: %s \n",displayADCVal);
+                }
+                freq_flag = 0;
+            }
+            if (counter >= ((loggingFreq[frequency_opt]*4))){ // check if the frequency is over and RESET the counter and read the measurements
+                counter=0;
+                freq_flag = 1;
+                LED2Counter=0;
+                //
+                // Use the flags to Toggle the LED for this timer
+                //
+                ToggleLED2 = ToggleLED2^1;
+                //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, g_ui32Flags << 2);
+                GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, ToggleLED2);
+            }
 
 
    }
@@ -464,7 +461,7 @@ void modeChange(void){
     switch(pb_mode){
     case AC_CURRENT:
         // change mux
-        // initialise pot
+
         measure_mode = CURRENT_10;
         break;
     case DC_CURRENT:
@@ -500,8 +497,8 @@ void modeChange(void){
         measure_mode = SETBRIGHT;
         break;
     }
- //   SetPot(measure_mode);
- //   UARTprintf("setpot to '%d'\n ",measure_mode );
+
+
     SetMuxDCAC(pb_mode); // set up the mux
     SetInputRelay(pb_mode);
     setModeDisplay(pb_mode);
@@ -573,7 +570,7 @@ initTimer(void)
     // 1 second is 2M counts as the clock is set up to be 2MHz
     // to be more general, 1s is equal to SysCtlClockGet() much number of counts
     // number of count = SysCtlClockGet()* required time in second
-    numTick = SysCtlClockGet()*0.5;
+    numTick = SysCtlClockGet()*0.25;
     TimerLoadSet(TIMER0_BASE, TIMER_A, numTick);
 
     // Setup the interrupts for the timer timeouts.
@@ -598,7 +595,8 @@ Timer0IntHandler(void)
     //
     ROM_TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
-    counter ++;
+    counter++;
     loggingCounter++;
+    LED2Counter++;
 
 }

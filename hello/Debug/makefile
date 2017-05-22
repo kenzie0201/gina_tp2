@@ -13,6 +13,7 @@ ORDERED_OBJS += \
 "./mylib/ADC.obj" \
 "./mylib/digitpot.obj" \
 "./mylib/display.obj" \
+"./mylib/led.obj" \
 "./mylib/mypwm.obj" \
 "./mylib/switchgain.obj" \
 "./mylib/uart.obj" \
@@ -165,8 +166,8 @@ hello.bin: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "hello.obj" "startup_ccs.obj" "mylib/ADC.obj" "mylib/digitpot.obj" "mylib/display.obj" "mylib/mypwm.obj" "mylib/switchgain.obj" "mylib/uart.obj" "utils/uartstdio.obj" 
-	-$(RM) "hello.d" "startup_ccs.d" "mylib/ADC.d" "mylib/digitpot.d" "mylib/display.d" "mylib/mypwm.d" "mylib/switchgain.d" "mylib/uart.d" "utils/uartstdio.d" 
+	-$(RM) "hello.obj" "startup_ccs.obj" "mylib/ADC.obj" "mylib/digitpot.obj" "mylib/display.obj" "mylib/led.obj" "mylib/mypwm.obj" "mylib/switchgain.obj" "mylib/uart.obj" "utils/uartstdio.obj" 
+	-$(RM) "hello.d" "startup_ccs.d" "mylib/ADC.d" "mylib/digitpot.d" "mylib/display.d" "mylib/led.d" "mylib/mypwm.d" "mylib/switchgain.d" "mylib/uart.d" "utils/uartstdio.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
