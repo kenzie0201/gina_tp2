@@ -1,6 +1,0 @@
-startup_ccs.c
-*.ini_initial
-*.cmd
-*.xml
-*.ccxml
-Debug/
