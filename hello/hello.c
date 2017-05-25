@@ -112,7 +112,8 @@ main(void)
 //------------------------------------------SETUP----------------------------------------//
     SysCtlClockSet(SYSCTL_SYSDIV_8|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
 //    SysCtlClockSet(SYSCTL_SYSDIV_8|SYSCTL_USE_PLL|SYSCTL_XTAL_10MHZ|SYSCTL_OSC_MAIN);
-    InitConsole();
+    initUART0();
+    initUART1();
     initADC();
     initLCD();
     initMux();
@@ -446,21 +447,22 @@ main(void)
                 }
                 //UARTprintf("measure_mode %d \n",measure_mode);
                 if (measure_mode == SETBRIGHT){
-                    UARTprintf("In brightness mode\n");
+                   // UARTprintf("In brightness mode\n");
                     memset(brightness_opt_str,0,sizeof(brightness_opt_str));
                     itoa(brightness_opt,brightness_opt_str,10);
                     UARTSendMeasurement(pb_mode,measure_mode,brightness_opt_str);
 
                 }else if (measure_mode == SETPERIOD){
-                    UARTprintf("In setting period\n");
+                   // UARTprintf("In setting period\n");
                     memset(loggingDurationString,0,sizeof(loggingDurationString));
                     ftoa(loggingDuration,loggingDurationString);
                     UARTSendMeasurement(pb_mode,measure_mode,loggingDurationString);
                 }else {
-                   // UARTprintf("In displaying mode\n");
+                  //  UARTprintf("In displaying mode\n"); -------------------------------------->UARTprintf screwed up the normal UARTSend function
                     UARTSendMeasurement(pb_mode,measure_mode,displayADCVal);
                     //UARTSend(displayADCVal);
                 }
+                UARTprintf("\n");
                 if (logging_pressed == 1){
                     UARTprintf("display: %s \n",displayADCVal);
                 }

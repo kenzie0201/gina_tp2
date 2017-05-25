@@ -19,8 +19,10 @@
 #include "display.h"
 
 
-void InitConsole(void);
+void initUART0(void);
+void initUART1(void);
 void UARTSend(const char *pui8Buffer);
 void UARTSendMeasurement(uint8_t pb_mode, uint8_t measure_mode, char * readVal);
-
+void UARTIntHandler(void);
+void UART1IntHandler(void);
 #endif /* LIB_UART_H_ */
