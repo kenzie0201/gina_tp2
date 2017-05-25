@@ -8,7 +8,7 @@
 	<isElfFormat value="true"/>
 	<rts value="libc.a"/>
 	<createSlaveProjects value=""/>
-	<origin value="/Applications/ti/TivaWare_C_Series-2.1.4.178/examples/boards/ek-tm4c123gxl/hello/ccs"/>
+	<origin value="/Users/wangeorgina/Downloads/hello-3"/>
 	<isTargetManual value="false"/>
 	<connection value="common/targetdb/connections/Stellaris_ICDI_Connection.xml"/>
 </projectOptions>

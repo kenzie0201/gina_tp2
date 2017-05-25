@@ -72,6 +72,7 @@ uint8_t measure_mode, pb_mode;
 uint8_t mode_level = 1;
 uint8_t frequency_opt = 0;
 uint8_t brightness_opt = 1;
+char brightness_opt_str[5] = "\0";
 uint8_t freq_flag = 0;
 uint8_t cursor_pos = 0;
 uint8_t duration_red_pressed = 0;
@@ -81,6 +82,7 @@ uint8_t set_duration[5] = {0,0,0,0,0};
 uint8_t set_cursor_duration[]={5,6,8,9,11,15};
 
 float loggingDuration=0;
+char loggingDurationString[100] = "\0";
 char int2str_duration[10] = "\0";
 // for timer
 uint32_t g_ui32Flags=0;
@@ -200,18 +202,27 @@ main(void)
        SysCtlDelay(10);
 
 //       }
-       if (loggingCounter >= (loggingDuration*2)){ // check if logging duration is over and RESET the counter and flag
+       if ((logging_pressed == 1 )&&(loggingCounter >= (loggingDuration)*4)){ // check if logging duration is over and RESET the counter and flag
            loggingCounter = 0;
            logging_pressed = 0;
        }
 
-       if (LED2Counter >= ((loggingFreq[frequency_opt]*2))){ // check if the frequency is over and RESET the counter and read the measurements
-           LED2Counter =0;
+       if ((counter >= ((loggingFreq[frequency_opt]*2)))&& (ToggleLED2 ==1)){ // check if the frequency is over and RESET the counter and read the measurements
+
            ToggleLED2 = ToggleLED2^1;
            //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, g_ui32Flags << 2);
            GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, ToggleLED2);
        }
-
+       if (counter >= ((loggingFreq[frequency_opt]*4))){ // check if the frequency is over and RESET the counter and read the measurements
+           counter=0;
+           freq_flag = 1;
+           //
+           // Use the flags to Toggle the LED for this timer
+           //
+           ToggleLED2 = ToggleLED2^1;
+           //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, g_ui32Flags << 2);
+           GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, ToggleLED2);
+       }
 
  //          UARTprintf("freq_flag : %d \n",freq_flag);
             // send 0x38 to read the ADC
@@ -433,25 +444,28 @@ main(void)
                     setCursorPositionLCD(1,5);
                     printLCD(displayADCVal);
                 }
+                //UARTprintf("measure_mode %d \n",measure_mode);
+                if (measure_mode == SETBRIGHT){
+                    UARTprintf("In brightness mode\n");
+                    memset(brightness_opt_str,0,sizeof(brightness_opt_str));
+                    itoa(brightness_opt,brightness_opt_str,10);
+                    UARTSendMeasurement(pb_mode,measure_mode,brightness_opt_str);
 
+                }else if (measure_mode == SETPERIOD){
+                    UARTprintf("In setting period\n");
+                    memset(loggingDurationString,0,sizeof(loggingDurationString));
+                    ftoa(loggingDuration,loggingDurationString);
+                    UARTSendMeasurement(pb_mode,measure_mode,loggingDurationString);
+                }else {
+                   // UARTprintf("In displaying mode\n");
+                    UARTSendMeasurement(pb_mode,measure_mode,displayADCVal);
+                    //UARTSend(displayADCVal);
+                }
                 if (logging_pressed == 1){
                     UARTprintf("display: %s \n",displayADCVal);
                 }
                 freq_flag = 0;
             }
-            if (counter >= ((loggingFreq[frequency_opt]*4))){ // check if the frequency is over and RESET the counter and read the measurements
-                counter=0;
-                freq_flag = 1;
-                LED2Counter=0;
-                //
-                // Use the flags to Toggle the LED for this timer
-                //
-                ToggleLED2 = ToggleLED2^1;
-                //GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, g_ui32Flags << 2);
-                GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, ToggleLED2);
-            }
-
-
    }
 }
 void modeChange(void){

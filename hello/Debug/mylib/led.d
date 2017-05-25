@@ -18,12 +18,13 @@ mylib/led.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h
 mylib/led.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/stdarg.h
 mylib/led.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/ssi.h
 mylib/led.obj: ../mylib/uart.h
-mylib/led.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
-mylib/led.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
-mylib/led.obj: ../mylib/digitpot.h
-mylib/led.obj: ../mylib/display.h
 mylib/led.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h
 mylib/led.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/linkage.h
+mylib/led.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
+mylib/led.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
+mylib/led.obj: ../mylib/display.h
+mylib/led.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h
+mylib/led.obj: ../mylib/digitpot.h
 
 ../mylib/led.c: 
 ../mylib/led.h: 
@@ -43,9 +44,10 @@ mylib/led.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/inclu
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/stdarg.h: 
 /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/ssi.h: 
 ../mylib/uart.h: 
-/Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h: 
-/Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h: 
-../mylib/digitpot.h: 
-../mylib/display.h: 
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h: 
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/linkage.h: 
+/Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h: 
+/Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h: 
+../mylib/display.h: 
+/Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h: 
+../mylib/digitpot.h: 

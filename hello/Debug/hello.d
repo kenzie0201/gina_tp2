@@ -24,10 +24,11 @@ hello.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_gpio.h
 hello.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h
 hello.obj: ../mylib/ADC.h
 hello.obj: ../mylib/uart.h
+hello.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h
 hello.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
-hello.obj: ../mylib/digitpot.h
 hello.obj: ../mylib/display.h
 hello.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h
+hello.obj: ../mylib/digitpot.h
 hello.obj: ../mylib/switchgain.h
 hello.obj: ../mylib/mypwm.h
 hello.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/pwm.h
@@ -57,10 +58,11 @@ hello.obj: ../mylib/led.h
 /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h: 
 ../mylib/ADC.h: 
 ../mylib/uart.h: 
+/Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h: 
 /Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h: 
-../mylib/digitpot.h: 
 ../mylib/display.h: 
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h: 
+../mylib/digitpot.h: 
 ../mylib/switchgain.h: 
 ../mylib/mypwm.h: 
 /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/pwm.h: 

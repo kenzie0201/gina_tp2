@@ -31,22 +31,22 @@ void SetMuxDCAC(int mode){
     case DC_CURRENT:
         GPIOPinWrite(GPIO_PORTC_BASE,GPIO_PIN_6, 64);
         GPIOPinWrite(GPIO_PORTD_BASE,GPIO_PIN_6, 0);
-        UARTprintf("setting DC CURRENT\n");
+//        UARTprintf("setting DC CURRENT\n");
         break;
     case AC_CURRENT:
         GPIOPinWrite(GPIO_PORTC_BASE,GPIO_PIN_6, 0);
         GPIOPinWrite(GPIO_PORTD_BASE,GPIO_PIN_6, 0);
-        UARTprintf("setting AC CURRENT\n");
+//        UARTprintf("setting AC CURRENT\n");
         break;
     case DC_VOLTAGE:
         GPIOPinWrite(GPIO_PORTC_BASE,GPIO_PIN_6, 64); // 0
         GPIOPinWrite(GPIO_PORTD_BASE,GPIO_PIN_6, 64); // 1
-        UARTprintf("setting DC VOLTAGE\n");
+//        UARTprintf("setting DC VOLTAGE\n");
         break;
     case AC_VOLTAGE:
         GPIOPinWrite(GPIO_PORTC_BASE,GPIO_PIN_6, 0);
         GPIOPinWrite(GPIO_PORTD_BASE,GPIO_PIN_6, 64);
-        UARTprintf("setting AC VOLTAGE\n");
+//        UARTprintf("setting AC VOLTAGE\n");
         break;
     }
 }
@@ -65,31 +65,31 @@ void SetGain(int mode){
     switch(mode){
     case CURRENT_10:
         GPIOPinWrite(GPIO_PORTB_BASE,GPIO_PIN_5|GPIO_PIN_4, 32);
-        UARTprintf("setting CURRENT_10\n");
+ //       UARTprintf("setting CURRENT_10\n");
         break;
     case CURRENT_200:
         GPIOPinWrite(GPIO_PORTB_BASE,GPIO_PIN_5|GPIO_PIN_4, 48);
-        UARTprintf("setting CURRENT_200\n");
+ //       UARTprintf("setting CURRENT_200\n");
         break;
     case VOLTAGE_1:
         GPIOPinWrite(GPIO_PORTB_BASE,GPIO_PIN_5|GPIO_PIN_4, 0);
-        UARTprintf("setting VOLTAGE_1\n");
+ //       UARTprintf("setting VOLTAGE_1\n");
         break;
     case VOLTAGE_5:
         GPIOPinWrite(GPIO_PORTB_BASE,GPIO_PIN_5|GPIO_PIN_4, 16);
-        UARTprintf("setting VOLTAGE_5\n");
+ //       UARTprintf("setting VOLTAGE_5\n");
         break;
     case VOLTAGE_12:
         GPIOPinWrite(GPIO_PORTB_BASE,GPIO_PIN_5|GPIO_PIN_4, 32);
-        UARTprintf("setting VOLTAGE_12\n");
+ //       UARTprintf("setting VOLTAGE_12\n");
         break;
     case RESISTANCE_1K:
         GPIOPinWrite(GPIO_PORTC_BASE,GPIO_PIN_7, 0);
-        UARTprintf("setting RESISTANCE_1K\n");
+//        UARTprintf("setting RESISTANCE_1K\n");
         break;
     case RESISTANCE_1M:
         GPIOPinWrite(GPIO_PORTC_BASE,GPIO_PIN_7, 128);
-        UARTprintf("setting RESISTANCE_1M\n");
+ //       UARTprintf("setting RESISTANCE_1M\n");
         break;
     }
 }

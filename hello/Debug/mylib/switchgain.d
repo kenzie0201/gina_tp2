@@ -18,12 +18,13 @@ mylib/switchgain.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/utils/uartstd
 mylib/switchgain.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/stdarg.h
 mylib/switchgain.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/ssi.h
 mylib/switchgain.obj: ../mylib/uart.h
-mylib/switchgain.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
-mylib/switchgain.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
-mylib/switchgain.obj: ../mylib/digitpot.h
-mylib/switchgain.obj: ../mylib/display.h
 mylib/switchgain.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h
 mylib/switchgain.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/linkage.h
+mylib/switchgain.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
+mylib/switchgain.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
+mylib/switchgain.obj: ../mylib/display.h
+mylib/switchgain.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h
+mylib/switchgain.obj: ../mylib/digitpot.h
 
 ../mylib/switchgain.c: 
 ../mylib/switchgain.h: 
@@ -43,9 +44,10 @@ mylib/switchgain.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LT
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/stdarg.h: 
 /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/ssi.h: 
 ../mylib/uart.h: 
-/Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h: 
-/Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h: 
-../mylib/digitpot.h: 
-../mylib/display.h: 
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h: 
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/linkage.h: 
+/Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h: 
+/Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h: 
+../mylib/display.h: 
+/Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h: 
+../mylib/digitpot.h: 

@@ -2,7 +2,45 @@
 int test =1;
 void UARTIntHandler(void);
 
+void UARTSendMeasurement(uint8_t pb_mode, uint8_t measure_mode, char * readVal){
+    char pb[20] = "\0";
+    char measure[1] = "\0";
 
+    itoa ((int)pb_mode,pb,10);
+    strcat(pb,",");
+    itoa ((int)measure_mode,measure,10);
+    strcat(pb,measure);
+    strcat(pb,",");
+    UARTSend(pb);
+//    UARTCharPut(UART0_BASE, ',');
+
+//    UARTSend(measure);
+//    UARTCharPut(UART0_BASE, ',');
+    UARTSend(readVal);
+    UARTSend("\n");
+}
+//*****************************************************************************
+//
+// Send a string to the UART.  This function sends a string of characters to a
+// particular UART module.
+//
+//*****************************************************************************
+void
+UARTSend(const char *pui8Buffer)
+{
+    uint32_t ui32Count;
+    ui32Count = strlen(pui8Buffer);
+    //
+    // Loop while there are more characters to send.
+    //
+    while(ui32Count--)
+    {
+        //
+        // Write the next character to the UART.
+        //
+        UARTCharPutNonBlocking(UART0_BASE, *pui8Buffer++);
+    }
+}
 //*****************************************************************************
 //
 // This function sets up UART0 to be used for a console to display information

@@ -17,8 +17,12 @@ mylib/digitpot.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio
 mylib/digitpot.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/stdarg.h
 mylib/digitpot.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/ssi.h
 mylib/digitpot.obj: ../mylib/uart.h
+mylib/digitpot.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h
+mylib/digitpot.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/linkage.h
 mylib/digitpot.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
 mylib/digitpot.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
+mylib/digitpot.obj: ../mylib/display.h
+mylib/digitpot.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h
 
 ../mylib/digitpot.c: 
 ../mylib/digitpot.h: 
@@ -37,5 +41,9 @@ mylib/digitpot.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/inter
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/stdarg.h: 
 /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/ssi.h: 
 ../mylib/uart.h: 
+/Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h: 
+/Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/linkage.h: 
 /Applications/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h: 
 /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h: 
+../mylib/display.h: 
+/Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h: 
