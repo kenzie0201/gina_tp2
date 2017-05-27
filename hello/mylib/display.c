@@ -107,6 +107,16 @@ unsigned char enter[8] = {
     0b01000,
     0b00100
 };
+unsigned char circle1[8] = {
+    0b00000,
+    0b01110,
+    0b11111,
+    0b11111,
+    0b11111,
+    0b01110,
+    0b00000,
+    0b00000
+};
 //
 // Pulse the EN bit LOW - HIGH - LOW
 // To signal the LCD to accept the data/cmd
@@ -311,7 +321,7 @@ void initLCD(void)
     buildChar(LV4,BrightnessLV4);
     buildChar(LV5,BrightnessLV5);
     buildChar(ENTER,enter);
-
+    buildChar(CIRCLE,circle1);
 }
 
 //
@@ -334,6 +344,9 @@ void printSpecialChar(char input){
     sendByte(input, TRUEDIS);
 }
 void setModeDisplay(int mode){
+    setCursorPositionLCD(1,0);
+    printLCD("     ");
+
     if ( (mode == AC_CURRENT)) {
         setCursorPositionLCD(0,0);
         printLCD("CURR:");
@@ -344,6 +357,8 @@ void setModeDisplay(int mode){
 
         setCursorPositionLCD(1,14);
         printLCD("mA");
+        setCursorPositionLCD(1,0);
+        printSpecialChar(CIRCLE);
     }else if ((mode == AC_VOLTAGE)) {
         setCursorPositionLCD(0,0);
         printLCD("VOLT:");
@@ -353,6 +368,8 @@ void setModeDisplay(int mode){
         printLCD(" AC ");
         setCursorPositionLCD(1,14);
         printLCD(" V");
+        setCursorPositionLCD(1,0);
+        printLCD("o");
     }else if ( (mode == DC_CURRENT)) {
         setCursorPositionLCD(0,0);
         printLCD("CURR:");
@@ -363,6 +380,8 @@ void setModeDisplay(int mode){
 
         setCursorPositionLCD(1,14);
         printLCD("mA");
+        setCursorPositionLCD(1,0);
+        printLCD("o");
     }else if ( (mode == DC_VOLTAGE)) {
         setCursorPositionLCD(0,0);
         printLCD("VOLT:");
@@ -373,6 +392,8 @@ void setModeDisplay(int mode){
 
         setCursorPositionLCD(1,14);
         printLCD(" V");
+        setCursorPositionLCD(1,0);
+        printLCD("o");
     }else if ( mode == RESISTANCE){// resistance mode
         setCursorPositionLCD(0,0);
         printLCD("RESIS:");
@@ -380,14 +401,20 @@ void setModeDisplay(int mode){
         printLCD("    ");
         setCursorPositionLCD(1,14);
         printLCD("  ");
+        setCursorPositionLCD(1,0);
+        printLCD("o");
     }else if ( mode == CONTINUITY){
         setCursorPositionLCD(0,0);
         printLCD("CONTI:");
         setCursorPositionLCD(0,11);
         printLCD("    ");
+        setCursorPositionLCD(1,0);
+        printLCD("o");
     }else if ( mode == LOGIC){
         setCursorPositionLCD(0,0);
         printLCD("LOGIC:         ");
+        setCursorPositionLCD(1,0);
+        printLCD("o");
     }else if ( mode == BRIGHTNESS){
         setCursorPositionLCD(0,0);
         printLCD("SET BRIGHTNESS ");

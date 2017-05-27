@@ -114,6 +114,7 @@ void setModeDisplay(int mode);
 #define LV4         0X04
 #define LV5         0X05
 #define ENTER       0X06
+#define CIRCLE      0x07
 
 
 
