@@ -40,7 +40,10 @@
 #include "driverlib/interrupt.h"
 #include "inc/hw_gpio.h"
 #include "driverlib/timer.h"
-
+//#include "utils/cmdline.h"
+//#include "utils/uartstdio.h"
+//#include "ff.h"
+//#include "diskio.h"
 
 #include "mylib/ADC.h"
 #include "mylib/display.h"
@@ -50,6 +53,8 @@
 #include "mylib/display.h"
 #include "mylib/mypwm.h"
 #include "mylib/led.h"
+#include "mySDcard.h"
+
 
 #define MIN_10   0
 #define MIN_1    1
@@ -62,6 +67,7 @@ void SW1_IntHandler(void);
 void modeChange(void);
 void Timer0IntHandler(void);
 void initTimer(void);
+
 
 
 float loggingFreq[] = {0.5, 1, 2, 5, 10, 60, 120, 300, 600};
@@ -91,6 +97,7 @@ int numTick;
 uint8_t loggingCounter = 0;
 uint8_t counter =0;
 uint8_t LED2Counter =0;
+
 
 //*****************************************************************************
 //
@@ -123,6 +130,11 @@ main(void)
     // Enable the GPIO port that is used for the on-board LED.
     initTimer();
     initLED();
+
+    initSDcard();
+    writeSD();
+
+
 
 
 //---------------------------- Enable processor interrupts-------------------------------//

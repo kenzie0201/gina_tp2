@@ -33,6 +33,15 @@ hello.obj: ../mylib/switchgain.h
 hello.obj: ../mylib/mypwm.h
 hello.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/pwm.h
 hello.obj: ../mylib/led.h
+hello.obj: ../mySDcard.h
+hello.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h
+hello.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/stdio.h
+hello.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/systick.h
+hello.obj: /Applications/ti/TivaWare_C_Series-2.1.4.178/utils/cmdline.h
+hello.obj: ../ff.h
+hello.obj: ../integer.h
+hello.obj: ../ffconf.h
+hello.obj: ../diskio.h
 
 ../hello.c: 
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/stdint.h: 
@@ -67,3 +76,12 @@ hello.obj: ../mylib/led.h
 ../mylib/mypwm.h: 
 /Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/pwm.h: 
 ../mylib/led.h: 
+../mySDcard.h: 
+/Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/string.h: 
+/Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.1.LTS/include/stdio.h: 
+/Applications/ti/TivaWare_C_Series-2.1.4.178/driverlib/systick.h: 
+/Applications/ti/TivaWare_C_Series-2.1.4.178/utils/cmdline.h: 
+../ff.h: 
+../integer.h: 
+../ffconf.h: 
+../diskio.h: 

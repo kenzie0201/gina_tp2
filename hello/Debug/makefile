@@ -8,7 +8,10 @@ GEN_OPTS__FLAG :=
 GEN_CMDS__FLAG := 
 
 ORDERED_OBJS += \
+"./ff.obj" \
 "./hello.obj" \
+"./mmc-tm4c123g.obj" \
+"./mySDcard.obj" \
 "./startup_ccs.obj" \
 "./mylib/ADC.obj" \
 "./mylib/digitpot.obj" \
@@ -17,6 +20,7 @@ ORDERED_OBJS += \
 "./mylib/mypwm.obj" \
 "./mylib/switchgain.obj" \
 "./mylib/uart.obj" \
+"./utils/cmdline.obj" \
 "./utils/uartstdio.obj" \
 "../hello_ccs.cmd" \
 $(GEN_CMDS__FLAG) \
@@ -166,8 +170,8 @@ hello.bin: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "hello.obj" "startup_ccs.obj" "mylib/ADC.obj" "mylib/digitpot.obj" "mylib/display.obj" "mylib/led.obj" "mylib/mypwm.obj" "mylib/switchgain.obj" "mylib/uart.obj" "utils/uartstdio.obj" 
-	-$(RM) "hello.d" "startup_ccs.d" "mylib/ADC.d" "mylib/digitpot.d" "mylib/display.d" "mylib/led.d" "mylib/mypwm.d" "mylib/switchgain.d" "mylib/uart.d" "utils/uartstdio.d" 
+	-$(RM) "ff.obj" "hello.obj" "mmc-tm4c123g.obj" "mySDcard.obj" "startup_ccs.obj" "mylib/ADC.obj" "mylib/digitpot.obj" "mylib/display.obj" "mylib/led.obj" "mylib/mypwm.obj" "mylib/switchgain.obj" "mylib/uart.obj" "utils/cmdline.obj" "utils/uartstdio.obj" 
+	-$(RM) "ff.d" "hello.d" "mmc-tm4c123g.d" "mySDcard.d" "startup_ccs.d" "mylib/ADC.d" "mylib/digitpot.d" "mylib/display.d" "mylib/led.d" "mylib/mypwm.d" "mylib/switchgain.d" "mylib/uart.d" "utils/cmdline.d" "utils/uartstdio.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

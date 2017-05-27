@@ -179,7 +179,7 @@ void setCursorPositionLCD(char row, char col)
 
     address |= col;
 
-    sendByte(0x80 | address, FALSE);
+    sendByte(0x80 | address, FALSEDIS);
 }
 
 //
@@ -189,8 +189,8 @@ void setCursorPositionLCD(char row, char col)
 
 void clearLCD(void)
 {
-    sendByte(0x01, FALSE); // Clear screen
-    sendByte(0x02, FALSE); // Back to home
+    sendByte(0x01, FALSEDIS); // Clear screen
+    sendByte(0x02, FALSEDIS); // Back to home
     SysCtlDelay(30000);
 }
 
@@ -199,7 +199,7 @@ void clearLCD(void)
 //
 
 void homeLCD(void) {
-    sendByte(0x02, FALSE);
+    sendByte(0x02, FALSEDIS);
     SysCtlDelay(30000);
 }
 
@@ -209,7 +209,7 @@ void homeLCD(void) {
 //
 
 void setBlockCursorLCD(void) {
-    sendByte(0x0F, FALSE);
+    sendByte(0x0F, FALSEDIS);
 }
 
 //
@@ -217,7 +217,7 @@ void setBlockCursorLCD(void) {
 //
 
 void setLineCursorLCD(void) {
-    sendByte(0x0E, FALSE);
+    sendByte(0x0E, FALSEDIS);
 }
 
 //
@@ -225,7 +225,7 @@ void setLineCursorLCD(void) {
 //
 
 void cursorOnLCD(void) {
-    sendByte(0x0E, FALSE);
+    sendByte(0x0E, FALSEDIS);
 }
 
 //
@@ -233,7 +233,7 @@ void cursorOnLCD(void) {
 //
 
 void cursorOffLCD(void) {
-    sendByte(0x0C, FALSE);
+    sendByte(0x0C, FALSEDIS);
 }
 
 //
@@ -241,7 +241,7 @@ void cursorOffLCD(void) {
 //
 
 void displayOffLCD(void) {
-    sendByte(0x08, FALSE);
+    sendByte(0x08, FALSEDIS);
 }
 
 //
@@ -249,7 +249,7 @@ void displayOffLCD(void) {
 //
 
 void displayOnLCD(void) {
-    sendByte(0x0C, FALSE);
+    sendByte(0x0C, FALSEDIS);
 }
 
 //
@@ -298,9 +298,9 @@ void initLCD(void)
     pulseLCD();
     GPIOPinWrite(DATA_PORT_BASE, ALLDATAPINS, 0b0010);
     pulseLCD();
-    sendByte(0x28,FALSE);  // Set two lines
+    sendByte(0x28,FALSEDIS);  // Set two lines
     cursorOffLCD();       // Cursor invisible
-    sendByte(0x06, FALSE); // Set insert mode
+    sendByte(0x06, FALSEDIS); // Set insert mode
     clearLCD();
 
     // load special characters
@@ -326,12 +326,12 @@ void printLCD(char *text)
 
     while ((c != 0) && (*c != 0))
     {
-        sendByte(*c, TRUE);
+        sendByte(*c, TRUEDIS);
         c++;
     }
 }
 void printSpecialChar(char input){
-    sendByte(input, TRUE);
+    sendByte(input, TRUEDIS);
 }
 void setModeDisplay(int mode){
     if ( (mode == AC_CURRENT)) {
@@ -557,11 +557,11 @@ void ftoa(float f,char *buf)
 void buildChar(unsigned char loc,unsigned char *newChar){
     int i;
     if(loc<8){
-        sendByte((0x40+(loc*8)),FALSE);
+        sendByte((0x40+(loc*8)),FALSEDIS);
         for(i=0; i<8;i++){
-            sendByte(newChar[i], TRUE);
+            sendByte(newChar[i], TRUEDIS);
         }
-        sendByte(0x80,FALSE);
+        sendByte(0x80,FALSEDIS);
     }
 }
 

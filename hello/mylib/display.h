@@ -64,8 +64,8 @@ void ftoa(float f,char *buf);
 void buildChar(unsigned char loc,unsigned char *newChar);
 void printSpecialChar(char input);
 void setModeDisplay(int mode);
-#define FALSE 0
-#define TRUE 1
+#define FALSEDIS 0
+#define TRUEDIS 1
 /*
  *
  * Pin Connections:
