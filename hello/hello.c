@@ -463,7 +463,9 @@ main(void)
                     printLCD(displayADCVal);
                 }else if (measure_mode == SETPERIOD){
                     if(duration_green_pressed>0){
+
                         if(cursor_pos <5){
+                            memset(displayADCVal,0,sizeof(displayADCVal));
                             itoa(set_duration[cursor_pos],displayADCVal,10);
                             setCursorPositionLCD(1,set_cursor_duration[cursor_pos]);
                             printLCD(displayADCVal);

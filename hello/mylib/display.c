@@ -358,7 +358,7 @@ void setModeDisplay(int mode){
         setCursorPositionLCD(1,14);
         printLCD("mA");
         setCursorPositionLCD(1,0);
-        printSpecialChar(CIRCLE);
+        printLCD("o");
     }else if ((mode == AC_VOLTAGE)) {
         setCursorPositionLCD(0,0);
         printLCD("VOLT:");
