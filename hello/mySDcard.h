@@ -23,6 +23,8 @@
 #include "mylib/display.h"
 
 void initSDcard(void);
-void writeSD(void);
+void openFile(void);
+void writeSD(char *data);
+void closeFile(void);
 
 #endif /* LIB_MYSDCARD_H_ */

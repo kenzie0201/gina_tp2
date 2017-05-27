@@ -67,6 +67,7 @@ void SW1_IntHandler(void);
 void modeChange(void);
 void Timer0IntHandler(void);
 void initTimer(void);
+void logging(uint8_t logging_mode);
 
 
 
@@ -78,6 +79,7 @@ uint8_t measure_mode, pb_mode;
 uint8_t mode_level = 1;
 uint8_t frequency_opt = 0;
 uint8_t brightness_opt = 1;
+char displayADCVal[17]="\0";
 char brightness_opt_str[5] = "\0";
 uint8_t freq_flag = 0;
 uint8_t cursor_pos = 0;
@@ -99,6 +101,11 @@ uint8_t counter =0;
 uint8_t LED2Counter =0;
 
 
+const char testtest[] = \
+"***********************************************************************\n"
+"ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg\n"
+"ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg\n"
+"***********************************************************************\n";
 //*****************************************************************************
 //
 // Configure SSI0 in master Freescale (SPI) mode.  This example will send out
@@ -113,14 +120,14 @@ main(void)
     uint32_t readVal[3];
 
     float measuredADCVal;
-    char displayADCVal[17]="\0";
+
     char tmp[17]="\0"; // not really using just for buffer
     int i,tmpSet;
 //------------------------------------------SETUP----------------------------------------//
     SysCtlClockSet(SYSCTL_SYSDIV_8|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
 //    SysCtlClockSet(SYSCTL_SYSDIV_8|SYSCTL_USE_PLL|SYSCTL_XTAL_10MHZ|SYSCTL_OSC_MAIN);
     initUART0();
-    initUART1();
+//    initUART1();
     initADC();
     initLCD();
     initMux();
@@ -130,10 +137,12 @@ main(void)
     // Enable the GPIO port that is used for the on-board LED.
     initTimer();
     initLED();
-
     initSDcard();
-    writeSD();
 
+//
+//    openFile();
+//    writeSD(testtest);
+//    closeFile();
 
 
 
@@ -215,9 +224,10 @@ main(void)
        SysCtlDelay(10);
 
 //       }
-       if ((logging_pressed == 1 )&&(loggingCounter >= (loggingDuration)*4)){ // check if logging duration is over and RESET the counter and flag
+       if ((logging_pressed == 2 )&&(loggingCounter >= (loggingDuration)*4)){ // check if logging duration is over and RESET the counter and flag
            loggingCounter = 0;
-           logging_pressed = 0;
+           logging_pressed = 3;
+           UARTprintf("LOGGING TIMEOUT\n " );
        }
 
        if ((counter >= ((loggingFreq[frequency_opt]*2)))&& (ToggleLED2 ==1)){ // check if the frequency is over and RESET the counter and read the measurements
@@ -344,6 +354,16 @@ main(void)
                     }
 
                     break;
+                case SETSTANDBY:
+                    if (mode_level == 0){
+                        setCursorPositionLCD(1,5);
+                        printLCD("  ON  ");
+                    }else {
+                        setCursorPositionLCD(1,5);
+                        printLCD("  OFF ");
+                    }
+
+                    break;
 
                 case SETFREQ:
 
@@ -457,30 +477,66 @@ main(void)
                     setCursorPositionLCD(1,5);
                     printLCD(displayADCVal);
                 }
-                //UARTprintf("measure_mode %d \n",measure_mode);
-                if (measure_mode == SETBRIGHT){
-                   // UARTprintf("In brightness mode\n");
-                    memset(brightness_opt_str,0,sizeof(brightness_opt_str));
-                    itoa(brightness_opt,brightness_opt_str,10);
-                    UARTSendMeasurement(pb_mode,measure_mode,brightness_opt_str);
+//                    UARTprintf("measure_mode %d \n",measure_mode);
+//                if (measure_mode == SETBRIGHT){
+//                   // UARTprintf("In brightness mode\n");
+//                    memset(brightness_opt_str,0,sizeof(brightness_opt_str));
+//                    itoa(brightness_opt,brightness_opt_str,10);
+//                    UARTSendMeasurement(pb_mode,measure_mode,brightness_opt_str);
+//
+//                }else if (measure_mode == SETPERIOD){
+//                   // UARTprintf("In setting period\n");
+//                    memset(loggingDurationString,0,sizeof(loggingDurationString));
+//                    ftoa(loggingDuration,loggingDurationString);
+//                    UARTSendMeasurement(pb_mode,measure_mode,loggingDurationString);
+//                }else {
+//                  //  UARTprintf("In displaying mode\n"); -------------------------------------->UARTprintf screwed up the normal UARTSend function
+//                    UARTSendMeasurement(pb_mode,measure_mode,displayADCVal);
+//                    //UARTSend(displayADCVal);
+//                }
+//                UARTprintf("\n");
+                logging(logging_pressed);
 
-                }else if (measure_mode == SETPERIOD){
-                   // UARTprintf("In setting period\n");
-                    memset(loggingDurationString,0,sizeof(loggingDurationString));
-                    ftoa(loggingDuration,loggingDurationString);
-                    UARTSendMeasurement(pb_mode,measure_mode,loggingDurationString);
-                }else {
-                  //  UARTprintf("In displaying mode\n"); -------------------------------------->UARTprintf screwed up the normal UARTSend function
-                    UARTSendMeasurement(pb_mode,measure_mode,displayADCVal);
-                    //UARTSend(displayADCVal);
-                }
-                UARTprintf("\n");
-                if (logging_pressed == 1){
-                    UARTprintf("display: %s \n",displayADCVal);
-                }
-                freq_flag = 0;
             }
+                freq_flag = 0;
+
    }
+}
+void logging(uint8_t logging_mode){
+
+    char pb[20] = "\0";
+    char measure[1] = "\0";
+
+    switch(logging_mode){
+    case 1:
+        UARTprintf("LOGGING INIT\n " );
+        // open the file and send out pb mode and range
+        openFile();
+        itoa ((int)pb_mode,pb,10);
+        strcat(pb,",");
+        itoa ((int)measure_mode,measure,10);
+        strcat(pb,measure);
+        strcat(pb,",");
+        writeSD(pb);
+        writeSD(displayADCVal);
+        writeSD(",");
+        logging_pressed = 2;
+        break;
+    case 2:
+        UARTprintf("LOGGING DATA\n " );
+        // keep sending data
+        writeSD(displayADCVal);
+        writeSD(",");
+ //       UARTprintf("display: %s \n",displayADCVal);
+        break;
+    case 3:
+        UARTprintf("LOGGING DONE\n " );
+        writeSD("\n");
+        closeFile();
+        logging_pressed = 0;
+        break;
+    }
+
 }
 void modeChange(void){
     uint8_t i;
@@ -524,6 +580,9 @@ void modeChange(void){
     case BRIGHTNESS:
         measure_mode = SETBRIGHT;
         break;
+    case STANDBY:
+        measure_mode = SETSTANDBY;
+        break;
     }
 
 
@@ -538,7 +597,7 @@ void SW1_IntHandler(void)
     if (GPIOIntStatus(GPIO_PORTA_BASE, false) & GPIO_PIN_7) {
         if (mode_level == 1 && (logging_pressed == 0)) {
             // change mode when PB is pressed
-            if(pb_mode<10){
+            if(pb_mode<11){
                 pb_mode++;
             }else{
                 pb_mode =1;
@@ -557,20 +616,32 @@ void SW1_IntHandler(void)
 
     if (GPIOIntStatus(GPIO_PORTA_BASE, false) & GPIO_PIN_6) {
 
-           mode_level = 2;
-           freq_flag = 1;
-           if(pb_mode == DURATION){
-               duration_green_pressed++;
-           }else if((pb_mode == FREQ)||(pb_mode == BRIGHTNESS)){
-           }else {
-               mode_level = 1;
-               logging_pressed^= 1;
-               counter = 0;
-               loggingCounter = 0;
-           }
-//           UARTprintf("GREEN PRESSED\n " );
-           GPIOIntClear(GPIO_PORTA_BASE, GPIO_PIN_6);  // Clear interrupt flag
-       }
+        if (pb_mode == STANDBY){
+            mode_level ^= 1;
+            UARTprintf(" mode %d\n ",mode_level );
+        }else {
+            mode_level = 2;
+        }
+
+        freq_flag = 1;
+        if(pb_mode == DURATION){
+            duration_green_pressed++;
+        }else if((pb_mode == FREQ)||(pb_mode == BRIGHTNESS)||(pb_mode == STANDBY)){
+        }else {
+            mode_level = 1;
+            counter = 0;
+            if(logging_pressed == 0){
+                logging_pressed = 1;
+                UARTprintf("LOGGING PRESSED\n " );
+            }else if (logging_pressed == 2){
+                logging_pressed = 3;
+                UARTprintf("LOGGING CANCELLED\n " );
+            }
+            loggingCounter = 0;
+        }
+        //           UARTprintf("GREEN PRESSED\n " );
+        GPIOIntClear(GPIO_PORTA_BASE, GPIO_PIN_6);  // Clear interrupt flag
+    }
 }
 //*****************************************************************************
 //

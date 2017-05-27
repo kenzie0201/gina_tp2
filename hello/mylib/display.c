@@ -405,8 +405,11 @@ void setModeDisplay(int mode){
         printLCD(".");
         setCursorPositionLCD(1,15);
         printSpecialChar(ENTER);
-
-
+    }else if ( mode == STANDBY){
+        setCursorPositionLCD(0,0);
+        printLCD("SET STANDBY    ");
+        setCursorPositionLCD(1,5);
+        printLCD("  OFF ");
     }
 }
 void setDiaplyValue(int mode, float readADC, char *displayADC){

@@ -91,6 +91,7 @@ void setModeDisplay(int mode);
 #define FREQ        8
 #define DURATION    9
 #define BRIGHTNESS  10
+#define STANDBY     11
 
 #define RS GPIO_PIN_4 // Pin 5
 #define EN GPIO_PIN_5 // Pin 6

@@ -33,5 +33,6 @@ void SetPot(int mode);
 #define SETPERIOD          9
 #define CONT               10
 #define SETBRIGHT          11
+#define SETSTANDBY         12
 
 #endif /* LIB_DIGITPOT_H_ */
