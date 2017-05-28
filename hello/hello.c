@@ -103,8 +103,8 @@ uint8_t loggingCounter = 0;
 uint8_t counter =0;
 uint8_t LED2Counter =0;
 char uartCount = 0;
-char UARTtmp[8] = {'\0'};
-char myRX[8] = {'\0'};
+char UARTtmp[10] = {'\0'};
+char myRX[10] = {'\0'};
 char UART_flag = 0;
 char *pb_mode_str, *value_str, *token, *tofree;
 int pb_mode_int;
@@ -138,7 +138,7 @@ main(void)
     SysCtlClockSet(SYSCTL_SYSDIV_8|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
 //    SysCtlClockSet(SYSCTL_SYSDIV_8|SYSCTL_USE_PLL|SYSCTL_XTAL_10MHZ|SYSCTL_OSC_MAIN);
     initUART0();
-//    initUART1();
+    initUART1();
     initADC();
     initLCD();
     initMux();
@@ -258,7 +258,6 @@ main(void)
 //               value_float = strtof(value_str,NULL);
 //               ftoa(value_float,value_tmp);
 
-               modeChange();
                switch(pb_mode){
                case FREQ:
                    value_float = strtof(value_str,NULL);
@@ -272,22 +271,42 @@ main(void)
                    break;
                case BRIGHTNESS:
                    brightness_opt = atoi(value_str);
+                   mode_level =2;
                    break;
                case DURATION:
                    value_float = strtof(value_str,NULL);
+
                    ftoa(value_float,value_tmp);
-                   loggingDuration = value_float;
-                   set_duration[0] = loggingDuration/600;
-                   set_duration[1] = (loggingDuration%600)/60;
-                   set_duration[2] = ((loggingDuration%600)%60)/10;
-                   set_duration[3] = (((loggingDuration%600)%60)%10);
-                   set_duration[4] = (loggingDuration-loggingDuration/1)*10;
+                   UARTprintf("value_tmp: %s",value_tmp);
+                   loggingDuration = (uint8_t)value_float;
+
+                   set_duration[0] = value_float/600;
+                   UARTprintf("set_duration[0]: %d",set_duration[0]);
+                   set_duration[1] = (value_float-(600*set_duration[0]))/60;
+                  // set_duration[1] = (uint8_t)(value_float%600)/60;
+                   set_duration[2] = (value_float-(600*set_duration[0])-(60*set_duration[1]))/10;
+                  // set_duration[2] = (uint8_t)((value_float%600)%60)/10;
+                   set_duration[3] = (value_float-(600*set_duration[0])-(60*set_duration[1])-(10*set_duration[2]));
+                   //set_duration[3] = (uint8_t)(((value_float%600)%60)%10);
+                   set_duration[4] = ((value_float-(600*set_duration[0])-(60*set_duration[1])-(10*set_duration[2])-set_duration[3])*10);
+
+                   for(i=0;i<5;i++){
+
+                       itoa(set_duration[i],displayADCVal,10);
+                       setCursorPositionLCD(1,set_cursor_duration[i]);
+                       printLCD(displayADCVal);
+                       setCursorPositionLCD(1,set_cursor_duration[i]);
+                       setBlockCursorLCD();
+                       setCursorPositionLCD(1,12);
+                       printLCD("   ");
+                   }
 
                    break;
                }
+               modeChange();
+               freq_flag = 1;
 
            }
-
        }
 
 
@@ -559,16 +578,16 @@ main(void)
                    // UARTprintf("In brightness mode\n");
                     memset(brightness_opt_str,0,sizeof(brightness_opt_str));
                     itoa(brightness_opt,brightness_opt_str,10);
-                  //  UARTSendMeasurement(pb_mode,measure_mode,brightness_opt_str);
+              //      UARTSendMeasurement(pb_mode,measure_mode,brightness_opt_str);
 
                 }else if (measure_mode == SETPERIOD){
                    // UARTprintf("In setting period\n");
                     memset(loggingDurationString,0,sizeof(loggingDurationString));
                     ftoa(loggingDuration,loggingDurationString);
-                  //  UARTSendMeasurement(pb_mode,measure_mode,loggingDurationString);
+                //    UARTSendMeasurement(pb_mode,measure_mode,loggingDurationString);
                 }else {
                   //  UARTprintf("In displaying mode\n"); -------------------------------------->UARTprintf screwed up the normal UARTSend function
-                  //  UARTSendMeasurement(pb_mode,measure_mode,displayADCVal);
+                //    UARTSendMeasurement(pb_mode,measure_mode,displayADCVal);
                     //UARTSend(displayADCVal);
                 }
 //                UARTprintf("\n");
@@ -830,7 +849,7 @@ UARTIntHandler(void)
                 // Read the next character from the UART and write it back to the UART.
                 UARTCharPutNonBlocking(UART0_BASE,rxChar);
 
-                if ((rxChar == '\r' || rxChar == '\n') || uartCount >= 6){
+                if ((rxChar == '\r' || rxChar == '\n') || uartCount >= 8){
                     UARTtmp[uartCount] = '\n';
                     //UARTtmp[uartCount] = rxChar;
                     strcpy(myRX, UARTtmp);
@@ -868,11 +887,11 @@ UART1IntHandler(void)
                 // Read the next character from the UART and write it back to the UART.
                 UARTCharPutNonBlocking(UART1_BASE,rxChar);
 
-                if ((rxChar == '\r' || rxChar == '\n') || uartCount >= 6){
+                if ((rxChar == '\r' || rxChar == '\n') || uartCount >= 8){
                     UARTtmp[uartCount] = '\n';
                     //UARTtmp[uartCount] = rxChar;
                     strcpy(myRX, UARTtmp);
-                    UARTprintf("myRX in  interrupt: %s \n",myRX);
+          //          UARTprintf("myRX in  interrupt: %s \n",myRX);
 
 
                     memset(UARTtmp,0,sizeof(UARTtmp));
