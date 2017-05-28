@@ -16,7 +16,7 @@ void UARTSendMeasurement(uint8_t pb_mode, uint8_t measure_mode, char * readVal){
 //    UARTSend(measure);
 //    UARTCharPut(UART0_BASE, ',');
     UARTSend(readVal);
-    UARTSend("\n");
+    UARTSend('\n');
 }
 //*****************************************************************************
 //

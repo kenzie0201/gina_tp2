@@ -252,16 +252,39 @@ main(void)
 
                pb_mode_str = strtok(tofree,token);
                pb_mode_int = atoi(pb_mode_str);
+               pb_mode = pb_mode_int;
 
                value_str = strtok(NULL,token);
-               value_float = strtof(value_str,NULL);
-               ftoa(value_float,value_tmp);
+//               value_float = strtof(value_str,NULL);
+//               ftoa(value_float,value_tmp);
 
-               //ftoa(value_float,value_tmp);
-               UARTprintf("pb_mode_str: %s \n",pb_mode_str);
-               UARTprintf("value_str: %s \n", value_str);
-               UARTprintf("pb_mode_int: %d \n",pb_mode_int);
-               UARTprintf("value_tmp: %s \n", value_tmp);
+               modeChange();
+               switch(pb_mode){
+               case FREQ:
+                   value_float = strtof(value_str,NULL);
+                   ftoa(value_float,value_tmp);
+                   for(i=0;i< 9;i++){
+                       if(value_float==loggingFreq[i]){
+                           frequency_opt = i;
+                           break;
+                       }
+                   }
+                   break;
+               case BRIGHTNESS:
+                   brightness_opt = atoi(value_str);
+                   break;
+               case DURATION:
+                   value_float = strtof(value_str,NULL);
+                   ftoa(value_float,value_tmp);
+                   loggingDuration = value_float;
+                   set_duration[0] = loggingDuration/600;
+                   set_duration[1] = (loggingDuration%600)/60;
+                   set_duration[2] = ((loggingDuration%600)%60)/10;
+                   set_duration[3] = (((loggingDuration%600)%60)%10);
+                   set_duration[4] = (loggingDuration-loggingDuration/1)*10;
+
+                   break;
+               }
 
            }
 
@@ -549,7 +572,7 @@ main(void)
                     //UARTSend(displayADCVal);
                 }
 //                UARTprintf("\n");
-//                logging(logging_pressed);
+                logging(logging_pressed);
 
 
             }
@@ -559,8 +582,10 @@ main(void)
 }
 void logging(uint8_t logging_mode){
 
-    char pb[20] = "\0";
-    char measure[1] = "\0";
+    char pb[20] = {'\0'};
+    char measure[3] = {'\0'};
+    char frequency[4] = {'\0'};
+    char duration[4] = {'\0'};
 
 
     switch(logging_mode){
@@ -573,6 +598,16 @@ void logging(uint8_t logging_mode){
         itoa ((int)measure_mode,measure,10);
         strcat(pb,measure);
         strcat(pb,",");
+
+
+        ftoa(loggingFreq[frequency_opt],frequency);
+        strcat(pb,frequency);
+        ftoa(loggingDuration,duration);
+        strcat(pb,",");
+        strcat(pb,duration);
+        strcat(pb,",");
+
+
         writeSD(pb);
         writeSD(displayADCVal);
         writeSD(",");
@@ -594,6 +629,9 @@ void logging(uint8_t logging_mode){
         UARTprintf("LOGGING DATA: %d \%\n ", percentage );
         break;
     case 3:
+        writeSD("\n");
+        closeFile();
+
         setCursorPositionLCD(1,0);
         printLCD("o");
         if(percentage<100){
@@ -606,8 +644,6 @@ void logging(uint8_t logging_mode){
         printLCD(logging_percentage);
         UARTprintf("LOGGING DATA: %d \%\n ", percentage );
         UARTprintf("LOGGING DONE\n " );
-        writeSD("\n");
-        closeFile();
         logging_pressed = 0;
         break;
     }
@@ -826,30 +862,29 @@ UART1IntHandler(void)
 
 
         // Loop while there are characters in the receive FIFO.
-            while(UARTCharsAvail(UART1_BASE))
-            {
+//            while(UARTCharsAvail(UART1_BASE))
+//            {
                 rxChar = UARTCharGetNonBlocking(UART1_BASE);
-
                 // Read the next character from the UART and write it back to the UART.
                 UARTCharPutNonBlocking(UART1_BASE,rxChar);
-                UARTprintf("%c",rxChar );
 
-//                //
-//                // Blink the LED to show a character transfer is occurring.
-//                //
-//                GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//
-//                //
-//                // Delay for 1 millisecond.  Each SysCtlDelay is about 3 clocks.
-//                //
-//                SysCtlDelay(SysCtlClockGet() / (1000 * 3));
-//
-//                //
-//                // Turn off the LED
-//                //
-//                GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);
+                if ((rxChar == '\r' || rxChar == '\n') || uartCount >= 6){
+                    UARTtmp[uartCount] = '\n';
+                    //UARTtmp[uartCount] = rxChar;
+                    strcpy(myRX, UARTtmp);
+                    UARTprintf("myRX in  interrupt: %s \n",myRX);
 
-            }
+
+                    memset(UARTtmp,0,sizeof(UARTtmp));
+                    uartCount = 0;
+                    UART_flag = 1;
+
+                }else {
+                    UARTtmp[uartCount] = rxChar;
+                    uartCount++;
+                }
+
+//            }
 
             GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0);  // Clear interrupt flag
 
