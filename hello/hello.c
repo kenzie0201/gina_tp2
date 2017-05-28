@@ -124,19 +124,17 @@ const char testtest[] = \
 //
 //*****************************************************************************
 int
-main(void)
-{
+main(void){
 //---------------------------------------VARIABLES---------------------------------------//
     uint32_t readVal[3];
 
     float measuredADCVal;
 
-    char tmp[17]="\0"; // not really using just for buffer
+    char tmp[17]={'\0'}; // not really using just for buffer
     int i,tmpSet;
 
 //------------------------------------------SETUP----------------------------------------//
     SysCtlClockSet(SYSCTL_SYSDIV_8|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
-//    SysCtlClockSet(SYSCTL_SYSDIV_8|SYSCTL_USE_PLL|SYSCTL_XTAL_10MHZ|SYSCTL_OSC_MAIN);
     initUART0();
     initUART1();
     initADC();
@@ -145,26 +143,14 @@ main(void)
 
 
     initPWM();
-    // Enable the GPIO port that is used for the on-board LED.
     initTimer();
     initLED();
     initSDcard();
-
-//
-//    openFile();
-//    writeSD(testtest);
-//    closeFile();
-
-
-
 //---------------------------- Enable processor interrupts-------------------------------//
     ROM_IntMasterEnable();
 
 //---------------------------------PB & INTERRUPT SETUP----------------------------------//
     // PB setup
-//    HWREG(GPIO_PORTA_BASE+GPIO_O_LOCK) = GPIO_LOCK_KEY;
-//
-//    HWREG(GPIO_PORTA_BASE+GPIO_O_CR) |= GPIO_PIN_7;
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);        // Enable port F
     GPIOPinTypeGPIOInput(GPIO_PORTA_BASE, GPIO_PIN_7);  // Init PF4 as input
     GPIOPadConfigSet(GPIO_PORTA_BASE, GPIO_PIN_7,
@@ -174,11 +160,8 @@ main(void)
     GPIOIntDisable(GPIO_PORTA_BASE, GPIO_PIN_7);        // Disable interrupt for PF4 (in case it was enabled)
     GPIOIntClear(GPIO_PORTA_BASE, GPIO_PIN_7);      // Clear pending interrupts for PF4
     GPIOIntRegister(GPIO_PORTA_BASE, SW1_IntHandler);     // Register our handler function for port F
-    GPIOIntTypeSet(GPIO_PORTA_BASE, GPIO_PIN_7,
-        GPIO_FALLING_EDGE);             // Configure PF4 for falling edge trigger
+    GPIOIntTypeSet(GPIO_PORTA_BASE, GPIO_PIN_7, GPIO_FALLING_EDGE);  // Configure PF4 for falling edge trigger
     GPIOIntEnable(GPIO_PORTA_BASE, GPIO_PIN_7);     // Enable interrupt for PF4
-
-
 
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);        // Enable port F
     GPIOPinTypeGPIOInput(GPIO_PORTA_BASE, GPIO_PIN_6);  // Init PF4 as input
@@ -193,12 +176,6 @@ main(void)
         GPIO_FALLING_EDGE);             // Configure PF4 for falling edge trigger
     GPIOIntEnable(GPIO_PORTA_BASE, GPIO_PIN_6);     // Enable interrupt for PF4
 
-
-//    // Enable the GPIO port that is used for the on-board LED.
-//    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
-//    // Enable the GPIO pins for the LED (PF1 & PF2).
-//    GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_2);
-
 //---------------------------------SETUP DISPLAY & MEASUREMENT MODE-----------------------//
     // set to display hellow world
     setCursorPositionLCD(0,5);
@@ -211,7 +188,7 @@ main(void)
     clearLCD();
 
     // initialise screen
-    pb_mode = DURATION;
+    pb_mode = RESISTANCE;
     setModeDisplay(pb_mode);
     brightness_opt = 3;
     setPWM(LED,brightness_opt);// initilise brightness
@@ -241,8 +218,8 @@ main(void)
 
            memset(pb_mode_str,0,sizeof(pb_mode_str));
            memset(value_str,0, sizeof(value_str));
-           UARTprintf("\n myRX in  main: %s \n ",myRX);
-           UARTprintf("myRX length: %d \n",strlen(myRX));
+//           UARTprintf("\n myRX in  main: %s \n ",myRX);
+//           UARTprintf("myRX length: %d \n",strlen(myRX));
            if (myRX[strlen(myRX)-1] == '\n' || myRX[strlen(myRX)-1] == '\r'){
 
                myRX[strlen(myRX)-1] == '\0';
@@ -277,11 +254,11 @@ main(void)
                    value_float = strtof(value_str,NULL);
 
                    ftoa(value_float,value_tmp);
-                   UARTprintf("value_tmp: %s",value_tmp);
+      //             UARTprintf("value_tmp: %s",value_tmp);
                    loggingDuration = (uint8_t)value_float;
 
                    set_duration[0] = value_float/600;
-                   UARTprintf("set_duration[0]: %d",set_duration[0]);
+    //               UARTprintf("set_duration[0]: %d",set_duration[0]);
                    set_duration[1] = (value_float-(600*set_duration[0]))/60;
                   // set_duration[1] = (uint8_t)(value_float%600)/60;
                    set_duration[2] = (value_float-(600*set_duration[0])-(60*set_duration[1]))/10;
@@ -400,7 +377,8 @@ main(void)
                     // if mode_level =2 -> start logging
                     break;
                 case RESISTANCE_1K:
-                    if ((measuredADCVal < 999 )&& (measuredADCVal > -999 )){
+                    if (measuredADCVal < 0.95 ){
+                        measuredADCVal = measuredADCVal*1000;
                     }else {
                         measure_mode = RESISTANCE_1M;
                     }
@@ -410,7 +388,7 @@ main(void)
                     // if mode_level =2 -> start logging
                     break;
                 case RESISTANCE_1M:
-                    if ((measuredADCVal < 0.9) &&( measuredADCVal > -0.9 )){
+                    if (measuredADCVal < 1.5){
                         measure_mode = RESISTANCE_1K;
                     }else if (measuredADCVal > 1000){ // 100k
                         // OL display
@@ -578,16 +556,16 @@ main(void)
                    // UARTprintf("In brightness mode\n");
                     memset(brightness_opt_str,0,sizeof(brightness_opt_str));
                     itoa(brightness_opt,brightness_opt_str,10);
-              //      UARTSendMeasurement(pb_mode,measure_mode,brightness_opt_str);
+                    UARTSendMeasurement(pb_mode,measure_mode,brightness_opt_str);
 
                 }else if (measure_mode == SETPERIOD){
                    // UARTprintf("In setting period\n");
                     memset(loggingDurationString,0,sizeof(loggingDurationString));
                     ftoa(loggingDuration,loggingDurationString);
-                //    UARTSendMeasurement(pb_mode,measure_mode,loggingDurationString);
+                    UARTSendMeasurement(pb_mode,measure_mode,loggingDurationString);
                 }else {
                   //  UARTprintf("In displaying mode\n"); -------------------------------------->UARTprintf screwed up the normal UARTSend function
-                //    UARTSendMeasurement(pb_mode,measure_mode,displayADCVal);
+                    UARTSendMeasurement(pb_mode,measure_mode,displayADCVal);
                     //UARTSend(displayADCVal);
                 }
 //                UARTprintf("\n");

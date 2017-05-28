@@ -75,6 +75,40 @@ void ReadADC(uint32_t* input){
 }
 float convertADC2range (uint32_t* ADCval, int mode) {
     float convertADCVal;
+    convertADCVal = (float)((ADCval[3]*2.5546)/65535);
+    convertADCVal = convertADCVal-1.2773;
+    switch(mode){
+    case CURRENT_10:
+        convertADCVal = convertADCVal/0.125;
+        break;
+    case CURRENT_200:
+        convertADCVal = convertADCVal/0.00625;
+        break;
+    case VOLTAGE_1:
+        convertADCVal = convertADCVal/1.25;
+        break;
+    case VOLTAGE_5:
+        convertADCVal = convertADCVal*4;
+        break;
+    case VOLTAGE_12:
+        convertADCVal = convertADCVal*48/5;
+        break;
+    case RESISTANCE_1K:
+        convertADCVal = (convertADCVal+1.2773)/2.5546;
+        break;
+    case RESISTANCE_1M:
+        convertADCVal = (convertADCVal+1.2773)*1000/2.5546;
+        //convertADCVal = (convertADCVal+1.25)*403.71;
+        break;
+    case LOGIC:
+        convertADCVal = convertADCVal+1.25;
+
+    }
+    return convertADCVal;
+
+}
+float convertADC2rangeAC (uint32_t* ADCval, int mode) {
+    float convertADCVal;
     convertADCVal = (float)((ADCval[3]*2.5776)/65535);
     convertADCVal = convertADCVal-1.25;
     switch(mode){
@@ -93,16 +127,8 @@ float convertADC2range (uint32_t* ADCval, int mode) {
     case VOLTAGE_12:
         convertADCVal = convertADCVal*48/5;
         break;
-    case RESISTANCE_1K:
-        convertADCVal = (convertADCVal+1.25)*1000/2.5;
-        break;
-    case RESISTANCE_1M:
-        convertADCVal = (convertADCVal+1.25)*100/2.5;
-        break;
-    case LOGIC:
-        convertADCVal = convertADCVal+1.25;
-
     }
     return convertADCVal;
 
 }
+

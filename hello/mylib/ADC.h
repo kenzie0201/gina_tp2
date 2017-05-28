@@ -21,5 +21,6 @@ void initADC(void);
 void WriteADC(char data);
 void ReadADC(uint32_t* input);
 float convertADC2range (uint32_t* ADCval, int mode);
+float convertADC2rangeAC (uint32_t* ADCval, int mode);
 
 #endif /* LIB_ADC_H_ */

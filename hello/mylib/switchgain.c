@@ -55,9 +55,9 @@ void SetInputRelay(int mode){
     if ((mode == AC_VOLTAGE)||(mode == DC_VOLTAGE)){
         GPIOPinWrite(GPIO_PORTE_BASE,GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
     }else if ((mode == RESISTANCE)||(mode == CONTINUITY)){
-        GPIOPinWrite(GPIO_PORTE_BASE,GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 4);
-    }else if (mode == LOGIC){
         GPIOPinWrite(GPIO_PORTE_BASE,GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 8);
+    }else if (mode == LOGIC){
+        GPIOPinWrite(GPIO_PORTE_BASE,GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 4);
     }
 }
 // this will be used for AD/DC PORTC PC6 PC7 PD6
