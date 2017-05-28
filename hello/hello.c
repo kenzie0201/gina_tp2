@@ -1,5 +1,5 @@
 //*****************************************************************************
-//
+// georgina
 // hello.c - Simple hello world example.
 //
 // Copyright (c) 2012-2017 Texas Instruments Incorporated.  All rights reserved.
@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "string.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -79,21 +80,21 @@ uint8_t measure_mode, pb_mode;
 uint8_t mode_level = 1;
 uint8_t frequency_opt = 0;
 uint8_t brightness_opt = 1;
-char displayADCVal[17]="\0";
-char brightness_opt_str[5] = "\0";
+char displayADCVal[17]={'\0'};
+char brightness_opt_str[5] = {'\0'};
 uint8_t freq_flag = 0;
 uint8_t cursor_pos = 0;
 uint8_t duration_red_pressed = 0;
 uint8_t duration_green_pressed = 0;
 uint8_t logging_pressed = 0;
 uint8_t set_duration[5] = {0,0,0,0,0};
-uint8_t logging_percentage[17] = "\0";
+uint8_t logging_percentage[17] = {'\0'};
 uint8_t set_cursor_duration[]={5,6,8,9,11,15};
 uint8_t percentage =0;
 
 float loggingDuration=0;
-char loggingDurationString[100] = "\0";
-char int2str_duration[10] = "\0";
+char loggingDurationString[100] = {'\0'};
+char int2str_duration[10] = {'\0'};
 // for timer
 uint32_t g_ui32Flags=0;
 uint32_t ToggleLED2 = 0;
@@ -101,7 +102,14 @@ int numTick;
 uint8_t loggingCounter = 0;
 uint8_t counter =0;
 uint8_t LED2Counter =0;
-
+char uartCount = 0;
+char UARTtmp[8] = {'\0'};
+char myRX[8] = {'\0'};
+char UART_flag = 0;
+char *pb_mode_str, *value_str, *token, *tofree;
+int pb_mode_int;
+float value_float;
+char value_tmp[5];
 
 const char testtest[] = \
 "***********************************************************************\n"
@@ -125,6 +133,7 @@ main(void)
 
     char tmp[17]="\0"; // not really using just for buffer
     int i,tmpSet;
+
 //------------------------------------------SETUP----------------------------------------//
     SysCtlClockSet(SYSCTL_SYSDIV_8|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
 //    SysCtlClockSet(SYSCTL_SYSDIV_8|SYSCTL_USE_PLL|SYSCTL_XTAL_10MHZ|SYSCTL_OSC_MAIN);
@@ -217,15 +226,48 @@ main(void)
 
 
 //----------------------------------------START-------------------------------------------//
+    uint8_t tmptmptmp[2] ;
    while(1){
 //       setBlockCursorLCD();
 //       setCursorPositionLCD(0,0);
 //       homeLCD();
 //       for (i = 0; i<16; i++){
 //       setCursorPositionLCD(0,i);
- //      SysCtlDelay(10);
+      SysCtlDelay(10);
 
 //       }
+       if (UART_flag == 1){
+           UART_flag = 0;
+
+           memset(pb_mode_str,0,sizeof(pb_mode_str));
+           memset(value_str,0, sizeof(value_str));
+           UARTprintf("\n myRX in  main: %s \n ",myRX);
+           UARTprintf("myRX length: %d \n",strlen(myRX));
+           if (myRX[strlen(myRX)-1] == '\n' || myRX[strlen(myRX)-1] == '\r'){
+
+               myRX[strlen(myRX)-1] == '\0';
+
+               tofree = strdup(myRX);
+               token = strdup(",");
+
+               pb_mode_str = strtok(tofree,token);
+               pb_mode_int = atoi(pb_mode_str);
+
+               value_str = strtok(NULL,token);
+               value_float = strtof(value_str,NULL);
+               ftoa(value_float,value_tmp);
+
+               //ftoa(value_float,value_tmp);
+               UARTprintf("pb_mode_str: %s \n",pb_mode_str);
+               UARTprintf("value_str: %s \n", value_str);
+               UARTprintf("pb_mode_int: %d \n",pb_mode_int);
+               UARTprintf("value_tmp: %s \n", value_tmp);
+
+           }
+
+       }
+
+
        if (counter >= ((loggingFreq[frequency_opt]*4))){ // check if the frequency is over and RESET the counter and read the measurements
                 counter=0;
                 freq_flag = 1;
@@ -245,7 +287,7 @@ main(void)
 
            loggingCounter = 0;
            logging_pressed = 3;
-           UARTprintf("LOGGING TIMEOUT\n " );
+//           UARTprintf("LOGGING TIMEOUT\n " );
        }
 
        if ((counter >= ((loggingFreq[frequency_opt]*2)))&& (ToggleLED2 ==1)){ // check if the frequency is over and RESET the counter and read the measurements
@@ -269,7 +311,7 @@ main(void)
             measuredADCVal = convertADC2range (readVal, measure_mode);
 
             if (freq_flag == 1){
-                UARTprintf("(loggingCounter) %d\n ",(loggingCounter) );
+              //  UARTprintf("(loggingCounter) %d\n ",(loggingCounter) );
 
                 switch(measure_mode){
 
@@ -430,11 +472,11 @@ main(void)
                             break;
                         }
 
-                        UARTprintf("set_duration :");
-                        for (i=0;i<5;i++){
-                            UARTprintf(" %d ",set_duration[i]);
-                        }
-                        UARTprintf("\n");
+//                        UARTprintf("set_duration :");
+//                        for (i=0;i<5;i++){
+//                            UARTprintf(" %d ",set_duration[i]);
+//                        }
+//                        UARTprintf("\n");
                     }
 
                     //mode_level = 1;
@@ -489,7 +531,7 @@ main(void)
                     setCursorPositionLCD(1,5);
                     printLCD(displayADCVal);
                 }
-                    UARTprintf("measure_mode %d \n",measure_mode);
+//                    UARTprintf("measure_mode %d \n",measure_mode);
                 if (measure_mode == SETBRIGHT){
                    // UARTprintf("In brightness mode\n");
                     memset(brightness_opt_str,0,sizeof(brightness_opt_str));
@@ -500,14 +542,14 @@ main(void)
                    // UARTprintf("In setting period\n");
                     memset(loggingDurationString,0,sizeof(loggingDurationString));
                     ftoa(loggingDuration,loggingDurationString);
-                 //   UARTSendMeasurement(pb_mode,measure_mode,loggingDurationString);
+                  //  UARTSendMeasurement(pb_mode,measure_mode,loggingDurationString);
                 }else {
                   //  UARTprintf("In displaying mode\n"); -------------------------------------->UARTprintf screwed up the normal UARTSend function
-                 //   UARTSendMeasurement(pb_mode,measure_mode,displayADCVal);
+                  //  UARTSendMeasurement(pb_mode,measure_mode,displayADCVal);
                     //UARTSend(displayADCVal);
                 }
-                UARTprintf("\n");
-                logging(logging_pressed);
+//                UARTprintf("\n");
+//                logging(logging_pressed);
 
 
             }
@@ -733,5 +775,83 @@ Timer0IntHandler(void)
 
     counter++;
     LED2Counter++;
+
+}
+//*****************************************************************************
+//
+// The UART interrupt handler.
+//
+//*****************************************************************************
+void
+UARTIntHandler(void)
+{
+    unsigned char rxChar;
+
+        // Loop while there are characters in the receive FIFO.
+//            while(UARTCharsAvail(UART0_BASE))
+//            {
+                rxChar = UARTCharGetNonBlocking(UART0_BASE);
+                // Read the next character from the UART and write it back to the UART.
+                UARTCharPutNonBlocking(UART0_BASE,rxChar);
+
+                if ((rxChar == '\r' || rxChar == '\n') || uartCount >= 6){
+                    UARTtmp[uartCount] = '\n';
+                    //UARTtmp[uartCount] = rxChar;
+                    strcpy(myRX, UARTtmp);
+                    UARTprintf("myRX in  interrupt: %s \n",myRX);
+
+
+                    memset(UARTtmp,0,sizeof(UARTtmp));
+                    uartCount = 0;
+                    UART_flag = 1;
+
+                }else {
+                    UARTtmp[uartCount] = rxChar;
+                    uartCount++;
+                }
+ //           }
+
+            GPIOIntClear(GPIO_PORTA_BASE, GPIO_PIN_0);  // Clear interrupt flag
+}
+//*****************************************************************************
+//
+// The UART interrupt handler.
+//
+//*****************************************************************************
+void
+UART1IntHandler(void)
+{
+    unsigned char rxChar;
+
+
+
+        // Loop while there are characters in the receive FIFO.
+            while(UARTCharsAvail(UART1_BASE))
+            {
+                rxChar = UARTCharGetNonBlocking(UART1_BASE);
+
+                // Read the next character from the UART and write it back to the UART.
+                UARTCharPutNonBlocking(UART1_BASE,rxChar);
+                UARTprintf("%c",rxChar );
+
+//                //
+//                // Blink the LED to show a character transfer is occurring.
+//                //
+//                GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
+//
+//                //
+//                // Delay for 1 millisecond.  Each SysCtlDelay is about 3 clocks.
+//                //
+//                SysCtlDelay(SysCtlClockGet() / (1000 * 3));
+//
+//                //
+//                // Turn off the LED
+//                //
+//                GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);
+
+            }
+
+            GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0);  // Clear interrupt flag
+
 
 }
